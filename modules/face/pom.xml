@@ -91,6 +91,21 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check</id>
+            <phase>${option.codequality.check.phase}</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <excludeFromFailureFile>${project.basedir}/maven_plugins_config/exclude-pmd.properties</excludeFromFailureFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

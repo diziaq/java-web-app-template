@@ -18,6 +18,8 @@
     <version.spring.boot>2.4.0</version.spring.boot>
     <version.hamcrest>2.2</version.hamcrest>
     <version.plugin.jacoco>0.8.6</version.plugin.jacoco>
+    <version.plugin.maven.checkstyle>3.1.1</version.plugin.maven.checkstyle>
+    <version.plugin.maven.pmd>3.14.0</version.plugin.maven.pmd>
     <version.plugin.maven.compiler>3.8.1</version.plugin.maven.compiler>
     <version.plugin.maven.jar>3.2.0</version.plugin.maven.jar>
     <version.plugin.maven.resources>3.1.0</version.plugin.maven.resources>
@@ -83,6 +85,63 @@
                 </rule>
               </rules>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${version.plugin.maven.checkstyle}</version>
+        <dependencies>
+          <!--
+            Current checkstyle.xml contents are too modern for [maven-checkstyle-plugin:3.1.1] and lower.
+            Try to version up ${version.plugin.maven.checkstyle} and remove the <dependencies> block.
+           -->
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.38</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>${path.materials.location}/code_quality/checkstyle_java_config.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+          <skip>${option.codequality.skip}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>check</id>
+            <phase>${option.codequality.check.phase}</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${version.plugin.maven.pmd}</version>
+        <configuration>
+          <verbose>true</verbose>
+          <failurePriority>5</failurePriority>
+          <skip>${option.codequality.skip}</skip>
+          <linkXRef>false</linkXRef>
+          <rulesets>
+            <ruleset>${path.materials.location}/code_quality/pmd_rules/ruleset_java_standard.xml</ruleset>
+            <ruleset>${path.materials.location}/code_quality/pmd_rules/ruleset_java_jpinpoint.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <executions>
+          <execution>
+            <id>check</id>
+            <phase>${option.codequality.check.phase}</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
