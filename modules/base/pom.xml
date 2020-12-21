@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <description>Base module for sharing build routines among all sibling modules</description>
+
+  <groupId>supercalifragilistic.group</groupId>
+  <artifactId>supercalifragilistic-base</artifactId>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <revision>0.0.1</revision>
+
+    <version.java>11</version.java>
+    <version.spring.boot>2.4.0</version.spring.boot>
+    <version.hamcrest>2.2</version.hamcrest>
+    <version.plugin.jacoco>0.8.6</version.plugin.jacoco>
+    <version.plugin.maven.compiler>3.8.1</version.plugin.maven.compiler>
+    <version.plugin.maven.jar>3.2.0</version.plugin.maven.jar>
+    <version.plugin.maven.resources>3.1.0</version.plugin.maven.resources>
+    <version.plugin.maven.surefire>3.0.0-M5</version.plugin.maven.surefire>
+    <version.plugin.maven.failsafe>${version.plugin.maven.surefire}</version.plugin.maven.failsafe>
+    <version.plugin.maven.flatten>1.2.5</version.plugin.maven.flatten>
+
+    <encoding.source.code>UTF-8</encoding.source.code>
+    <encoding.resources>UTF-8</encoding.resources>
+
+    <manifest.build.time>${maven.build.timestamp}</manifest.build.time>
+    <manifest.build.number>none</manifest.build.number>
+    <manifest.built.by>anonymous/${user.name}</manifest.built.by>
+
+    <option.tests.skip>false</option.tests.skip>
+    <option.docs.skip>true</option.docs.skip>
+    <option.codequality.skip>false</option.codequality.skip>
+    <option.codequality.check.phase>verify</option.codequality.check.phase>
+    <option.test.coverage.ratio>1</option.test.coverage.ratio>
+
+    <path.materials.location>${project.basedir}/../../materials</path.materials.location>
+
+    <project.build.sourceEncoding>${encoding.source.code}</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${version.plugin.jacoco}</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>check</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>CLASS</element>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${option.test.coverage.ratio}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.plugin.maven.compiler}</version>
+        <configuration>
+          <encoding>${encoding.source.code}</encoding>
+          <release>${version.java}</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${version.plugin.maven.jar}</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <!-- do NOT set main class here - it should be explicitly maintained in every child project build-->
+              <Build-Number>${manifest.build.number}</Build-Number>
+              <Build-Time>${manifest.build.time}</Build-Time>
+              <Built-By>${manifest.built.by}</Built-By>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${version.plugin.maven.surefire}</version>
+        <configuration>
+          <skipTests>${option.tests.skip}</skipTests>
+          <disableXmlReport>true</disableXmlReport>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <failIfNoTests>true</failIfNoTests>
+          <skipAfterFailureCount>1</skipAfterFailureCount>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${version.plugin.maven.failsafe}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${version.plugin.maven.resources}</version>
+        <configuration>
+          <encoding>${encoding.resources}</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${version.plugin.maven.flatten}</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>${version.hamcrest}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <!--
+      To prevent conflicts with versions from transitive dependencies
+      it is recommended to avoid maintaining custom dependencyManagement sections in child modules.
+
+      This dependencyManagement is the only place in the project for the purpose.
+    -->
+    <dependencies>
+      <!--
+           NOTE:
+           When changing version beware that SpringBoot overrides some transitive dependencies
+           and it could cause unexpected build behaviour: i.e. skipping all tests silently.
+           Keep in mind that some "hidden" dependencies require explicit version declarations.
+
+           SpringBoot is the LAST ITEM in dependencyManagement,
+           so preceding items (including the parent's dependencyManagement)
+           have higher priority and can force specific versions.
+      -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${version.spring.boot}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
