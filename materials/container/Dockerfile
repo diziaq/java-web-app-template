@@ -3,7 +3,7 @@ FROM bellsoft/liberica-openjdk-alpine:11.0.9-12
 RUN addgroup -S apprunner && adduser -S apprunner -G apprunner
 RUN mkdir /config
 
-COPY modules/face/target/supercalifragilistic-app.jar /home/apprunner/app.jar
+COPY supercalifragilistic-app.jar /home/apprunner/app.jar
 
 USER apprunner:apprunner
 WORKDIR /home/apprunner

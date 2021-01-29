@@ -1,3 +1,5 @@
+:: this is an example of making docker image
+
 @echo off
 
 set JAVA_HOME=Z:/candidates/java/zulu11.0.6
